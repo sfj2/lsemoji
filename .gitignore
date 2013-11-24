@@ -1,0 +1,15 @@
+# compiled files/libs
+*.pyc
+.node_modules
+
+# finder/explorer config files
+.DS_Store
+Desktop.ini
+
+# thumbnail caches
+._*
+Thumbs.db
+
+# files that might appear on external disks
+.Spotlight-V100
+.Trashes
