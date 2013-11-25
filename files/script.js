@@ -1,8 +1,7 @@
 (function(){
 
-  var slower = {
-    mime : 'application/javascript',
-    url : 'https://github.com/davidfmiller/slower'
+  var lsemoji = {
+    url : 'https://github.com/davidfmiller/lsemoji'
   };
 
 }());
