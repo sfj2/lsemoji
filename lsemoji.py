@@ -15,38 +15,36 @@ import math
 import getopt
 
 IGNORED = ['.', '..', '.DS_Store']
-PACKAGES = ['.prefPane', '.framework', '.app']
-
-path = os.getcwd()
+PACKAGES = ['.PREFPANE', '.FRAMEWORK', '.APP']
 
 map = {
   # audio
-  '.m4a' : "🎵",
-  '.wav' : "🎵",
+  '.M4A' : "🎵",
+  '.WAV' : "🎵",
   # video
-  '.mpeg' : "📹",
+  '.MPEG' : "📹",
   # documents:
-  '.png' : "🎑",
-  '.gif' : "",
-  '.psd' : "",
-  '.doc' : "📝",
-  '.docx' : "📝",
-  '.ichat' : "💬",
+  '.PNG' : "🎑",
+  '.GIF' : "",
+  '.PSD' : "",
+  '.DOC' : "📝",
+  '.DOCX' : "📝",
+  '.ICHAT' : "💬",
   # text 
-  '.txt' : "📄",
-  '.eml' : "📫",
-  '.ics' : "📅",
-  '.html' : "🌏",
-  '.htm' : "🌏",
-  '.md' : "📝",
-  '.rss' : "📰",
-  '.vcf' : "👤",
+  '.TXT' : "📄",
+  '.EML' : "📫",
+  '.ICS' : "📅",
+  '.HTML' : "🌏",
+  '.HTM' : "🌏",
+  '.MD' : "📝",
+  '.RSS' : "📰",
+  '.VCF' : "👤",
 
   # misc
-  '.url' : "🔗",
-  '.webloc' : "🔗",
-  
-  'package' : "📦"
+  '.URL' : "🔗",
+  '.WEBLOC' : "🔗",
+
+  '.PACKAGE' : "📦"
 }
 
 
@@ -73,30 +71,14 @@ def filterContents(list):
       l.append(list)
   return l
 
-# class bcolors:
-#     HEADER = '\033[95m'
-#     OKBLUE = '\033[94m'
-#     OKGREY = '\033[1;30m'
-#     OKGREEN = '\033[92m'
-#     WARNING = '\033[93m'
-#     FAIL = '\033[91m'
-#     ENDC = '\033[0m'
-# 
-#     def disable(self):
-#         self.HEADER = ''
-#         self.OKBLUE = ''
-#         self.OKGREEN = ''
-#         self.WARNING = ''
-#         self.FAIL = ''
-#         self.ENDC = ''
-
-
 try:
   opts, args = getopt.getopt(sys.argv[1:], 'al')
 except getopt.GetoptError:
   print 'incorrect usage'
   sys.exit(2)
 
+if not args:
+  args = []
 
 showHidden = False
 showSize = False
@@ -107,79 +89,87 @@ for opt, arg in opts:
   elif opt == '-l':
     showSize = True
 
-if len(args) != 0:
-  path = os.path.join(path, args[0])
+if len(args) == 0:
+  args.append('')
 
-dot = []
-dirs = []
-files = []
+dirIndex = -1
+for arg in args:
 
+  dirIndex += 1
+  path = os.path.join(os.getcwd(), arg)
 
+  dirs = []
+  files = []
 
-if not os.path.isdir(path):
-  if os.path.exists(path):
-    files.append(os.path.basename(path))
-else:
-  for line in os.listdir(path):
-    line = line.rstrip()
-    if line in IGNORED:
-      continue
-    elif line[0] == '.' and not showHidden:
-      continue
-
-    full = os.path.abspath(os.path.join(path, line))
-    if os.path.isdir(full):
-      dirs.append(line)
-    elif os.path.exists(full):
-      files.append(line)
-
-for file in dot:
-  if file in IGNORED:
-    continue
-
-dirs = sorted(dirs, key=lambda s: s.lower())
-home = os.getenv('HOME')
-
-longest = 0
-for i in dirs + dot + files:
-  l = len(i)
-  if (l > longest):
-    longest = l
-
-i = 0 
-for dir in dirs:
-
-  full = os.path.abspath(os.path.join(path, dir))
-  contents = len(filterContents(os.listdir(full)))
-  name, extension = os.path.splitext(full)
-
-  emoji = " "
-  if full == home:
-    emoji = "🏡"
-  elif extension in PACKAGES:
-    emoji = map['package']
+  if not os.path.isdir(path):
+    if os.path.exists(path):
+      files.append(os.path.basename(path))
   else:
-    emoji = contents == 0 and "📁" or "📂"
+    for line in os.listdir(path):
+      line = line.rstrip()
+      if line in IGNORED:
+        continue
+      elif line[0] == '.' and not showHidden:
+        continue
+
+      full = os.path.abspath(os.path.join(path, line))
+      if os.path.isdir(full):
+        dirs.append(line)
+      elif os.path.exists(full):
+        files.append(line)
+
+  prefix = ''
+  if len(args) > 1  and (files or dirs):
+    print (dirIndex > 0 and "" or '') + "📁  " + arg
+    prefix = '   '
+
+  dirs = sorted(dirs, key=lambda s: s.lower())
+  home = os.getenv('HOME')
+
+  longest = 0
+  for i in dirs + files:
+    l = len(i)
+    if (l > longest):
+      longest = l
+
+  i = 0 
+  for dir in dirs:
+
+    full = os.path.abspath(os.path.join(path, dir))
+    contents = len(filterContents(os.listdir(full)))
+    name, extension = os.path.splitext(full)
+
+    extension = extension.upper()
+
+    emoji = " "
+    if full == home:
+      emoji = "🏡"
+    elif extension in PACKAGES:
+      emoji = map['.PACKAGE']
+    else:
+      emoji = contents == 0 and "📁" or "📂"
  
-  if showSize and contents:
-    contents = ((longest - len(dir)) * ' ') + (contents > 0 and str(contents) + " item" + (contents > 1 and "s" or ""))
-  else:
-    contents = ''
+    if showSize and contents:
+      contents = ((longest - len(dir)) * ' ') + (contents > 0 and str(contents) + " item" + (contents > 1 and "s" or ""))
+    else:
+      contents = ''
  
-  print emoji + "  " + dir + "  " + contents
-  i += 1
+    print prefix + emoji + "  " + dir + "  " + contents
+    i += 1
 
-files = sorted(files, key=lambda s: s.lower())
-last = None
-i = 0
+  files = sorted(files, key=lambda s: s.lower())
+  last = None
+  i = 0
 
-for file in files:
+  for file in files:
 
-  full = os.path.abspath(os.path.join(path, file))
-  name, extension = os.path.splitext(full)
+    full = os.path.abspath(os.path.join(path, file))
+    name, extension = os.path.splitext(full)
 
-  size = showSize and "  " + ((longest - len(file)) * ' ') + sizeof_fmt(os.path.getsize(full)) or ""
+    extension = extension.upper()
 
-  emoji = map.has_key(extension) and map[extension] or "📄"
-  print emoji + "  " + file + size
-  i += 1
+    size = showSize and "  " + ((longest - len(file)) * ' ') + sizeof_fmt(os.path.getsize(full)) or ""
+
+    emoji = map.has_key(extension) and map[extension] or "📄"
+    print prefix + emoji + "  " + file + size
+    i += 1
