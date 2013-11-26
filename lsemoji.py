@@ -15,21 +15,43 @@ import math
 import getopt
 
 IGNORED = ['.', '..', '.DS_Store']
-PACKAGES = ['.PREFPANE', '.FRAMEWORK', '.APP']
+PACKAGES = ['.PREFPANE', '.FRAMEWORK', '.APP', '.XCTEST']
 
 map = {
   # audio
   '.M4A' : "🎵",
+  '.M4R' : "🎵",
   '.WAV' : "🎵",
+  '.MP3' : "🎵",
+
   # video
-  '.MPEG' : "📹",
-  # documents:
-  '.PNG' : "🎑",
-  '.GIF' : "",
-  '.PSD' : "",
+  '.MPEG' : "🎬",
+  '.M4V' : "🎬",
+
+  # books
+  '.EPUB' : "📕",
+
+  # images
+  '.BMP' : "🎨",
+  '.PNG' : "🎨",
+  '.GIF' : "🎨",
+  '.JPG' : "🎨",
+  '.JPEG' : "🎨",
+  '.TIF' : "🎨",
+  '.TIFF' : "🎨",
+  '.ICO' : "🎨",
+  '.SVG' : "🎨",
+  '.PSD' : "🎨",
   '.DOC' : "📝",
   '.DOCX' : "📝",
   '.ICHAT' : "💬",
+
+  # scripts
+  '.SCPT' : "📃",
+  '.SH' : "📃",
+  '.PY' : "📃",
+  '.PL' : "📃",
+
   # text 
   '.TXT' : "📄",
   '.EML' : "📫",
@@ -40,11 +62,22 @@ map = {
   '.RSS' : "📰",
   '.VCF' : "👤",
 
+
   # misc
+  '.GPX' : "📍",
+  '.KML' : "📍",
   '.URL' : "🔗",
   '.WEBLOC' : "🔗",
+  '.DMG' : "💿",
+  '.APP' : "🔧",
 
-  '.PACKAGE' : "📦"
+  '.PKG' : "📦",
+  '.ZIP' : "📦",
+  '.GZ' : "📦",
+  
+  
+   # defaults
+  '.PACKAGE' : "📦",
 }
 
 
@@ -93,17 +126,21 @@ if len(args) == 0:
   args.append('')
 
 dirIndex = -1
-for arg in args:
 
-  dirIndex += 1
-  path = os.path.join(os.getcwd(), arg)
+for arg in args:
 
   dirs = []
   files = []
 
+  dirIndex += 1
+  path = os.path.join(os.getcwd(), arg)
+
+#  if path in dirs or path in args:
+#    continue
+
   if not os.path.isdir(path):
     if os.path.exists(path):
-      files.append(os.path.basename(path))
+      files.append(path)
   else:
     for line in os.listdir(path):
       line = line.rstrip()
@@ -114,12 +151,12 @@ for arg in args:
 
       full = os.path.abspath(os.path.join(path, line))
       if os.path.isdir(full):
-        dirs.append(line)
+        dirs.append(full)
       elif os.path.exists(full):
-        files.append(line)
+        files.append(full)
 
   prefix = ''
-  if len(args) > 1  and (files or dirs):
+  if len(args) > 1  and (files or dirs) and os.path.isdir(path):
     print (dirIndex > 0 and "" or '') + "📁  " + arg
     prefix = '   '
 
@@ -133,11 +170,15 @@ for arg in args:
       longest = l
 
   i = 0 
+  biggest = ''
   for dir in dirs:
 
     full = os.path.abspath(os.path.join(path, dir))
     contents = len(filterContents(os.listdir(full)))
     name, extension = os.path.splitext(full)
+
+    if len(str(contents)) > biggest:
+      biggest = len(str(contents))
 
     extension = extension.upper()
 
@@ -145,16 +186,16 @@ for arg in args:
     if full == home:
       emoji = "🏡"
     elif extension in PACKAGES:
-      emoji = map['.PACKAGE']
+      emoji = map.has_key(extension) and map[extension] or map['.PACKAGE']
     else:
       emoji = contents == 0 and "📁" or "📂"
- 
+
     if showSize and contents:
       contents = ((longest - len(dir)) * ' ') + (contents > 0 and str(contents) + " item" + (contents > 1 and "s" or ""))
     else:
       contents = ''
- 
-    print prefix + emoji + "  " + dir + "  " + contents
+
+    print prefix + emoji + "  " + os.path.basename(dir) + "  " + contents
     i += 1
 
   files = sorted(files, key=lambda s: s.lower())
@@ -171,5 +212,5 @@ for arg in args:
     size = showSize and "  " + ((longest - len(file)) * ' ') + sizeof_fmt(os.path.getsize(full)) or ""
 
     emoji = map.has_key(extension) and map[extension] or "📄"
-    print prefix + emoji + "  " + file + size
+    print prefix + emoji + "  " + os.path.basename(file) + size
     i += 1
