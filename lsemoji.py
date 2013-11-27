@@ -19,11 +19,11 @@ PACKAGES = ['.PREFPANE', '.FRAMEWORK', '.APP', '.XCTEST']
 
 map = {
   # audio
+  '.AIFF' : "🎵",
   '.M4A' : "🎵",
   '.M4R' : "🎵",
-  '.WAV' : "🎵",
   '.MP3' : "🎵",
-  '.AIFF' : "🎵",
+  '.WAV' : "🎵",
 
   # video
   '.MPEG' : "🎬",
@@ -36,22 +36,22 @@ map = {
   '.BMP' : "🎨",
   '.PNG' : "🎨",
   '.GIF' : "🎨",
+  '.ICO' : "🎨",
   '.JPG' : "🎨",
   '.JPEG' : "🎨",
+  '.PSD' : "🎨",
+  '.SVG' : "🎨",
   '.TIF' : "🎨",
   '.TIFF' : "🎨",
-  '.ICO' : "🎨",
-  '.SVG' : "🎨",
-  '.PSD' : "🎨",
-  '.DOC' : "📝",
-  '.DOCX' : "📝",
-  '.ICHAT' : "💬",
 
   # scripts
-  '.SCPT' : "📃",
-  '.SH' : "📃",
-  '.PY' : "📃",
   '.PL' : "📃",
+  '.PY' : "📃",
+  '.RB' : "📃",
+  '.SCPT' : "🍎",
+  '.SCPTD' : "🍎",
+  '.APPLESCRIPT' : "🍎",
+  '.SH' : "📃",
 
   # text 
   '.TXT' : "📄",
@@ -65,12 +65,18 @@ map = {
 
 
   # misc
+  '.APP' : "🔧",
+  '.DMG' : "💿",
+  '.DOC' : "📝",
+  '.DOCX' : "📝",
   '.GPX' : "📍",
+  '.ICHAT' : "💬",
   '.KML' : "📍",
+
   '.URL' : "🔗",
   '.WEBLOC' : "🔗",
-  '.DMG' : "💿",
-  '.APP' : "🔧",
+
+  '.WEBARCHIVE' : "🌍",
 
   '.PKG' : "📦",
   '.ZIP' : "📦",
