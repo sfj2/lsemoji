@@ -15,7 +15,7 @@ import math
 import getopt
 
 IGNORED = ['.', '..', '.DS_Store']
-PACKAGES = ['.PREFPANE', '.FRAMEWORK', '.APP', '.XCTEST']
+PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST']
 
 map = {
   # audio
@@ -33,36 +33,38 @@ map = {
   '.EPUB' : "📕",
 
   # images
-  '.BMP' : "🎨",
-  '.PNG' : "🎨",
-  '.GIF' : "🎨",
-  '.ICO' : "🎨",
-  '.JPG' : "🎨",
-  '.JPEG' : "🎨",
-  '.PSD' : "🎨",
-  '.SVG' : "🎨",
-  '.TIF' : "🎨",
-  '.TIFF' : "🎨",
+  '.BMP'  : "🎑",
+  '.PNG'  : "🎑",
+  '.GIF'  : "🎑",
+  '.ICO'  : "🎑",
+  '.JPG'  : "🎑",
+  '.JPEG' : "🎑",
+  '.PSD'  : "🎑",
+  '.SVG'  : "🎑",
+  '.TIF'  : "🎑",
+  '.TIFF' : "🎑",
 
   # scripts
   '.PL' : "📃",
+  '.JS' : "📃",
   '.PY' : "📃",
   '.RB' : "📃",
   '.SCPT' : "🍎",
-  '.SCPTD' : "🍎",
+#  '.SCPTD' : "🍎",
   '.APPLESCRIPT' : "🍎",
   '.SH' : "📃",
 
   # text 
-  '.TXT' : "📄",
-  '.EML' : "📫",
-  '.ICS' : "📅",
+  '.TXT'  : "📄",
+  '.EML'  : "📫",
+  '.ICS'  : "📅",
   '.HTML' : "🌏",
-  '.HTM' : "🌏",
-  '.MD' : "📝",
-  '.RSS' : "📰",
-  '.VCF' : "👤",
-
+  '.HTM'  : "🌏",
+  '.MD'   : "📝",
+  '.RSS'  : "📰",
+  '.VCF'  : "👤",
+  '.CSS'  : "🎨",
+  '.SCSS'  : "🎨",
 
   # misc
   '.APP' : "🔧",
@@ -72,6 +74,8 @@ map = {
   '.GPX' : "📍",
   '.ICHAT' : "💬",
   '.KML' : "📍",
+  '.JAR' : "☕",
+  
 
   '.URL' : "🔗",
   '.WEBLOC' : "🔗",
@@ -156,8 +160,10 @@ for arg in args:
       elif line[0] == '.' and not showHidden:
         continue
 
+      name, extension = os.path.splitext(line)
       full = os.path.abspath(os.path.join(path, line))
-      if os.path.isdir(full):
+
+      if os.path.isdir(full) and not extension.upper() in PACKAGES:
         dirs.append(full)
       elif os.path.exists(full):
         files.append(full)
@@ -216,8 +222,11 @@ for arg in args:
 
     extension = extension.upper()
 
+#    print extension + ' ' + (extension in PACKAGES and 'p' or '')
+
+
     size = showSize and "  " + ((longest - len(file)) * ' ') + sizeof_fmt(os.path.getsize(full)) or ""
 
-    emoji = map.has_key(extension) and map[extension] or "📄"
+    emoji = extension in PACKAGES and map['.PACKAGE'] or (map.has_key(extension) and map[extension] or "📄")
     print prefix + emoji + "  " + os.path.basename(file) + size
     i += 1
