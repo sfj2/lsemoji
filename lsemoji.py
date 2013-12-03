@@ -1,9 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# sort by folder
+# sort by folder on or off
 # case-insensitive sorting
 # emojis
+# 
 
 
 # todo:
@@ -152,6 +153,8 @@ for arg in args:
   if not os.path.isdir(path):
     if os.path.exists(path):
       files.append(path)
+    else:
+      sys.stderr.write("🚫  " + arg + " doesn't exist\n")
   else:
     for line in os.listdir(path):
       line = line.rstrip()
