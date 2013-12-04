@@ -203,6 +203,8 @@ for arg in args:
       emoji = "🏡"
     elif extension in PACKAGES:
       emoji = map.has_key(extension) and map[extension] or map['.PACKAGE']
+    elif os.path.ismount(full):
+      emoji = "💻"
     else:
       emoji = contents == 0 and "📁" or "📂"
 
