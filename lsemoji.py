@@ -204,7 +204,7 @@ for arg in args:
     elif extension in PACKAGES:
       emoji = map.has_key(extension) and map[extension] or map['.PACKAGE']
     elif os.path.ismount(full):
-      emoji = "💻"
+      emoji = "📀"
     else:
       emoji = contents == 0 and "📁" or "📂"
 
