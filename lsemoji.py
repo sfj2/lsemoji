@@ -46,8 +46,9 @@ map = {
   '.TIFF' : "🎑",
 
   # scripts
-  '.PL' : "📃",
+  '.COFFEE' : "📃",
   '.JS' : "📃",
+  '.PL' : "📃",
   '.PY' : "📃",
   '.RB' : "📃",
   '.SCPT' : "🍎",
@@ -145,7 +146,11 @@ for arg in args:
   files = []
 
   dirIndex += 1
-  path = os.path.join(os.getcwd(), arg)
+  try:
+    path = os.path.join(os.getcwd(), arg)
+  except OSError:
+    sys.stderr.write('🚫  Unable to determine current directory')
+    sys.exit(2)
 
 #  if path in dirs or path in args:
 #    continue
