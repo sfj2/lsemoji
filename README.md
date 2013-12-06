@@ -1,5 +1,4 @@
-lsemoji
-=======
+# lsemoji
 
 Human-friendly directory listings in your terminal. Example usage:
 
@@ -35,3 +34,14 @@ Human-friendly directory listings in your terminal. Example usage:
     🎬  video.mpeg
     📝  word.doc
     📝  word.docx
+    
+## Install
+
+Clone the repo (or just save the .py file locally) and ensure the script is in your path:
+
+    export PATH="$PATH:~/bin"
+
+You might want to create an alias for it, too. For bash do the following in your .profile:
+
+    function __emoji () { python ~/Documents/git/lsemoji/lsemoji.py "$@"; } 
+    alias l="__emoji"
