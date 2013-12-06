@@ -16,7 +16,7 @@ import math
 import getopt
 
 IGNORED = ['.', '..', '.DS_Store']
-PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST']
+PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST', '.BBPROJECTD']
 
 map = {
   # audio
