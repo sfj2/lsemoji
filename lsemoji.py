@@ -116,7 +116,7 @@ def emoji(path):
   Retrieve the emoji icon for a given absolute (full) pathname
   """
 
-  name, extension = os.path.splitext(full)
+  name, extension = os.path.splitext(path)
   extension = extension.upper()
 
   if extension in PACKAGES:
@@ -125,7 +125,7 @@ def emoji(path):
   elif path.rstrip('/') == HOME:
     return "🏡"
 
-  elif os.path.ismount(full):
+  elif os.path.ismount(path):
       return "📀"
 
   elif os.path.isdir(path):
@@ -146,112 +146,114 @@ def filterContents(list):
       l.append(list)
   return l
 
-try:
-  opts, args = getopt.getopt(sys.argv[1:], 'al')
-except getopt.GetoptError:
-  print 'incorrect usage'
-  sys.exit(2)
+if __name__ == '__main__':
 
-if not args:
-  args = []
-
-showHidden = False
-showSize = False
-
-for opt, arg in opts:
-  if opt == '-a':
-    showHidden = True
-  elif opt == '-l':
-    showSize = True
-
-if len(args) == 0:
-  args.append('')
-
-dirIndex = -1
-
-
-for arg in args:
-
-  dirs = []
-  files = []
-
-  dirIndex += 1
   try:
-    path = os.path.join(os.getcwd(), arg)
-  except OSError:
-    sys.stderr.write('🚫  Unable to determine current directory')
+    opts, args = getopt.getopt(sys.argv[1:], 'al')
+  except getopt.GetoptError:
+    print 'incorrect usage'
     sys.exit(2)
 
-#  if path in dirs or path in args:
-#    continue
+  if not args:
+    args = []
 
-  if not os.path.isdir(path):
-    if os.path.exists(path):
-      files.append(path)
+  showHidden = False
+  showSize = False
+
+  for opt, arg in opts:
+    if opt == '-a':
+      showHidden = True
+    elif opt == '-l':
+      showSize = True
+
+  if len(args) == 0:
+    args.append('')
+
+  dirIndex = -1
+
+
+  for arg in args:
+
+    dirs = []
+    files = []
+
+    dirIndex += 1
+    try:
+      path = os.path.join(os.getcwd(), arg)
+    except OSError:
+      sys.stderr.write('🚫  Unable to determine current directory')
+      sys.exit(2)
+
+  #  if path in dirs or path in args:
+  #    continue
+
+    if not os.path.isdir(path):
+      if os.path.exists(path):
+        files.append(path)
+      else:
+        sys.stderr.write("🚫  " + arg + " doesn't exist\n")
     else:
-      sys.stderr.write("🚫  " + arg + " doesn't exist\n")
-  else:
-    for line in os.listdir(path):
-      line = line.rstrip()
-      if line in IGNORED:
-        continue
-      elif line[0] == '.' and not showHidden:
-        continue
+      for line in os.listdir(path):
+        line = line.rstrip()
+        if line in IGNORED:
+          continue
+        elif line[0] == '.' and not showHidden:
+          continue
 
-      name, extension = os.path.splitext(line)
-      full = os.path.abspath(os.path.join(path, line))
+        name, extension = os.path.splitext(line)
+        full = os.path.abspath(os.path.join(path, line))
 
-      if os.path.isdir(full) and not extension.upper() in PACKAGES:
-        dirs.append(full)
-      elif os.path.exists(full):
-        files.append(full)
+        if os.path.isdir(full) and not extension.upper() in PACKAGES:
+          dirs.append(full)
+        elif os.path.exists(full):
+          files.append(full)
 
-  prefix = ''
-  if len(args) > 1  and (files or dirs) and os.path.isdir(path):
-    print emoji(path) + "  " + arg
-    prefix = '   '
+    prefix = ''
+    if len(args) > 1  and (files or dirs) and os.path.isdir(path):
+      print emoji(path) + "  " + arg
+      prefix = '   '
 
-  dirs = sorted(dirs, key=lambda s: s.lower())
+    dirs = sorted(dirs, key=lambda s: s.lower())
 
-  longest = 0
-  for i in dirs + files:
-    l = len(i)
-    if (l > longest):
-      longest = l
+    longest = 0
+    for i in dirs + files:
+      l = len(i)
+      if (l > longest):
+        longest = l
 
-  i = 0 
-  biggest = ''
-  for dir in dirs:
+    i = 0 
+    biggest = ''
+    for dir in dirs:
 
-    full = os.path.abspath(os.path.join(path, dir))
-    contents = len(filterContents(os.listdir(full)))
-    name, extension = os.path.splitext(full)
+      full = os.path.abspath(os.path.join(path, dir))
+      contents = len(filterContents(os.listdir(full)))
+      name, extension = os.path.splitext(full)
 
-    if len(str(contents)) > biggest:
-      biggest = len(str(contents))
+      if len(str(contents)) > biggest:
+        biggest = len(str(contents))
 
-    extension = extension.upper()
+      extension = extension.upper()
 
-    icon = emoji(full)
+      icon = emoji(full)
 
-    if showSize and contents:
-      contents = ((longest - len(dir)) * ' ') + (contents > 0 and str(contents) + " item" + (contents > 1 and "s" or ""))
-    else:
-      contents = ''
+      if showSize and contents:
+        contents = ((longest - len(dir)) * ' ') + (contents > 0 and str(contents) + " item" + (contents > 1 and "s" or ""))
+      else:
+        contents = ''
 
-    print prefix + icon + "  " + os.path.basename(dir) + "  " + contents
-    i += 1
+      print prefix + icon + "  " + os.path.basename(dir) + "  " + contents
+      i += 1
 
-  files = sorted(files, key=lambda s: s.lower())
-  last = None
-  i = 0
+    files = sorted(files, key=lambda s: s.lower())
+    last = None
+    i = 0
 
-  for file in files:
+    for file in files:
 
-    full = os.path.abspath(os.path.join(path, file))
+      full = os.path.abspath(os.path.join(path, file))
 
-    size = showSize and "  " + ((longest - len(file)) * ' ') + sizeof_fmt(os.path.getsize(full)) or ""
+      size = showSize and "  " + ((longest - len(file)) * ' ') + sizeof_fmt(os.path.getsize(full)) or ""
 
-    icon = emoji(full)
-    print prefix + icon + "  " + os.path.basename(file) + size
-    i += 1
+      icon = emoji(full)
+      print prefix + icon + "  " + os.path.basename(file) + size
+      i += 1
