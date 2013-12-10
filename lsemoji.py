@@ -4,8 +4,10 @@
 # sort by folder on or off
 # case-insensitive sorting
 # emojis
-# 
 
+"""
+Human friendly directory listings
+"""
 
 # todo:
 # ignore hidden files
@@ -21,6 +23,14 @@ PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST', '.BBPROJECTD
 HOME = os.getenv('HOME')
 
 map = {
+  
+  # special
+  'HOME' : "🏡",
+  'MOUNT' : "📀",
+  'FOLDER' : "📂",
+  'FOLDER_EMPTY' : "📁",
+  'DEFAULT' : "📄",
+
   # audio
   '.AIFF' : "🎵",
   '.M4A' : "🎵",
@@ -79,7 +89,6 @@ map = {
   '.ICHAT' : "💬",
   '.KML' : "📍",
   '.JAR' : "☕",
-  
 
   '.URL' : "🔗",
   '.WEBLOC' : "🔗",
@@ -123,15 +132,15 @@ def emoji(path):
     return map.has_key(extension) and map[extension] or map['.PACKAGE']
 
   elif path.rstrip('/') == HOME:
-    return "🏡"
+    return map['HOME']
 
   elif os.path.ismount(path):
-      return "📀"
+    return map['MOUNT']
 
   elif os.path.isdir(path):
-    return len(filterContents(os.listdir(path))) > 0 and "📂" or "📁"
+    return len(filterContents(os.listdir(path))) > 0 and map['FOLDER'] or map['FOLDER_EMPTY']
 
-  return extension in PACKAGES and map['.PACKAGE'] or (map.has_key(extension) and map[extension] or "📄")
+  return map.has_key(extension) and map[extension] or map['DEFAULT']
 
 
 def filterContents(list):
@@ -183,9 +192,6 @@ if __name__ == '__main__':
     except OSError:
       sys.stderr.write('🚫  Unable to determine current directory')
       sys.exit(2)
-
-  #  if path in dirs or path in args:
-  #    continue
 
     if not os.path.isdir(path):
       if os.path.exists(path):
