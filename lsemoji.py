@@ -18,6 +18,8 @@ import getopt
 IGNORED = ['.', '..', '.DS_Store']
 PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST', '.BBPROJECTD']
 
+HOME = os.getenv('HOME')
+
 map = {
   # audio
   '.AIFF' : "🎵",
@@ -94,6 +96,7 @@ map = {
 }
 
 
+
 def sizeof_fmt(num):
     """Human friendly file size"""
     unit_list = zip(['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'], [0, 0, 1, 2, 2, 2])
@@ -107,8 +110,34 @@ def sizeof_fmt(num):
         return '0 bytes'
     return '1 byte'
 
-def filterContents(list):
 
+def emoji(path):
+  """
+  Retrieve the emoji icon for a given absolute (full) pathname
+  """
+
+  name, extension = os.path.splitext(full)
+  extension = extension.upper()
+
+  if extension in PACKAGES:
+    return map.has_key(extension) and map[extension] or map['.PACKAGE']
+
+  elif path.rstrip('/') == HOME:
+    return "🏡"
+
+  elif os.path.ismount(full):
+      return "📀"
+
+  elif os.path.isdir(path):
+    return len(filterContents(os.listdir(path))) > 0 and "📂" or "📁"
+
+  return extension in PACKAGES and map['.PACKAGE'] or (map.has_key(extension) and map[extension] or "📄")
+
+
+def filterContents(list):
+  """
+  
+  """
   l = []
   for i in list:
     if i in IGNORED:
@@ -139,7 +168,7 @@ if len(args) == 0:
   args.append('')
 
 dirIndex = -1
-home = os.getenv('HOME')
+
 
 for arg in args:
 
@@ -179,11 +208,10 @@ for arg in args:
 
   prefix = ''
   if len(args) > 1  and (files or dirs) and os.path.isdir(path):
-    print (dirIndex > 0 and "" or '') + (path.rstrip('/') == home and "🏡  " or "📂 " ) + arg
+    print emoji(path) + "  " + arg
     prefix = '   '
 
   dirs = sorted(dirs, key=lambda s: s.lower())
-
 
   longest = 0
   for i in dirs + files:
@@ -204,22 +232,14 @@ for arg in args:
 
     extension = extension.upper()
 
-    emoji = " "
-    if full == home:
-      emoji = "🏡"
-    elif extension in PACKAGES:
-      emoji = map.has_key(extension) and map[extension] or map['.PACKAGE']
-    elif os.path.ismount(full):
-      emoji = "📀"
-    else:
-      emoji = contents == 0 and "📁" or "📂"
+    icon = emoji(full)
 
     if showSize and contents:
       contents = ((longest - len(dir)) * ' ') + (contents > 0 and str(contents) + " item" + (contents > 1 and "s" or ""))
     else:
       contents = ''
 
-    print prefix + emoji + "  " + os.path.basename(dir) + "  " + contents
+    print prefix + icon + "  " + os.path.basename(dir) + "  " + contents
     i += 1
 
   files = sorted(files, key=lambda s: s.lower())
@@ -229,15 +249,9 @@ for arg in args:
   for file in files:
 
     full = os.path.abspath(os.path.join(path, file))
-    name, extension = os.path.splitext(full)
-
-    extension = extension.upper()
-
-#    print extension + ' ' + (extension in PACKAGES and 'p' or '')
-
 
     size = showSize and "  " + ((longest - len(file)) * ' ') + sizeof_fmt(os.path.getsize(full)) or ""
 
-    emoji = extension in PACKAGES and map['.PACKAGE'] or (map.has_key(extension) and map[extension] or "📄")
-    print prefix + emoji + "  " + os.path.basename(file) + size
+    icon = emoji(full)
+    print prefix + icon + "  " + os.path.basename(file) + size
     i += 1
