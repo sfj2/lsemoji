@@ -46,7 +46,7 @@ You might want to create an alias for it, too. For bash do the following in your
     function __emoji () { python ~/Documents/git/lsemoji/lsemoji.py "$@"; } 
     alias l="__emoji"
 
-## Python Module
+## Python module
 
 `lsemoji` is also built to be a reusable Python module: 
 

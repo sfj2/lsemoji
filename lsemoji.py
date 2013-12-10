@@ -20,8 +20,6 @@ import getopt
 IGNORED = ['.', '..', '.DS_Store']
 PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST', '.BBPROJECTD']
 
-HOME = os.getenv('HOME')
-
 map = {
   
   # special
@@ -131,7 +129,7 @@ def emoji(path):
   if extension in PACKAGES:
     return map.has_key(extension) and map[extension] or map['.PACKAGE']
 
-  elif path.rstrip('/') == HOME:
+  elif path.rstrip('/') == os.getenv('HOME'):
     return map['HOME']
 
   elif os.path.ismount(path):
