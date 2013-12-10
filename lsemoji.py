@@ -139,6 +139,7 @@ if len(args) == 0:
   args.append('')
 
 dirIndex = -1
+home = os.getenv('HOME')
 
 for arg in args:
 
@@ -178,11 +179,11 @@ for arg in args:
 
   prefix = ''
   if len(args) > 1  and (files or dirs) and os.path.isdir(path):
-    print (dirIndex > 0 and "" or '') + "📁  " + arg
+    print (dirIndex > 0 and "" or '') + (path.rstrip('/') == home and "🏡  " or "📂 " ) + arg
     prefix = '   '
 
   dirs = sorted(dirs, key=lambda s: s.lower())
-  home = os.getenv('HOME')
+
 
   longest = 0
   for i in dirs + files:
