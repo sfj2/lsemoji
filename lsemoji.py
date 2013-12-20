@@ -16,9 +16,13 @@ import sys
 import os
 import math
 import getopt
+from datetime import date
 
 IGNORED = ['.', '..', '.DS_Store']
 PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST', '.BBPROJECTD']
+
+#def find_owner(filename):
+#    return getpwuid(stat(filename).st_uid).pw_name
 
 map = {
   
@@ -36,6 +40,7 @@ map = {
   '.M4R' : "🎵",
   '.MP3' : "🎵",
   '.WAV' : "🎵",
+  '.OGG' : "🎵",
 
   # video
   '.MPEG' : "🎬",
@@ -256,6 +261,7 @@ if __name__ == '__main__':
 
     longest = 0
     biggestSize = '1'
+    longestUnit = 0
     for i in dirs + files:
       l = len(os.path.basename(i.path))
       if l > longest:
@@ -264,16 +270,26 @@ if __name__ == '__main__':
       if len(i.size) > len(str(biggestSize)):
         biggestSize = i.size
 
+      if len(i.unit) > longestUnit:
+        longestUnit = len(i.unit)
+
     i = 0 
 
     for file in dirs + files:
 
       contents = ''
       if showSize:
-        if file.dir and len(file.contents):
+        if file.dir:
           contents = ((longest - len(os.path.basename(file.path))) * ' ') + (int(file.size) > 0 and (((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit  or "") or "")
+
+          if len(file.contents) == 0:
+            contents = ' ' * (len(contents) + len(biggestSize) + len(file.unit)) + ' '
+          
         elif not file.dir:
           contents = ((longest - len(os.path.basename(file.path))) * ' ') + ((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit
+
+        when = date.fromtimestamp(file.modified)
+        contents = contents + ((longestUnit - len(file.unit)) * ' ') + ' ' + str(when.strftime('%b %d %Y')) #%I:%M%p
 
       print prefix + file.emoji() + "  " + os.path.basename(file.path) + "  " + contents
       i += 1
