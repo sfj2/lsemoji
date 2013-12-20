@@ -87,6 +87,7 @@ map = {
   '.ICHAT' : "💬",
   '.KML' : "📍",
   '.JAR' : "☕",
+  '.PDF' : "📝",
 
   '.URL' : "🔗",
   '.WEBLOC' : "🔗",
@@ -213,7 +214,7 @@ if __name__ == '__main__':
 
     dirIndex += 1
     try:
-      path = os.path.join(os.getcwd(), arg)
+      path = os.path.abspath(os.path.join(os.getcwd(), arg))
     except OSError:
       sys.stderr.write('🚫  Unable to determine current directory')
       sys.exit(2)
@@ -240,8 +241,9 @@ if __name__ == '__main__':
           files.append(f)
 
     prefix = ''
-    if len(args) > 1  and (files or dirs) and f.dir:
-      print f.emoji() + "  " + arg
+    t = File(path)
+    if len(args) > 1  and (files or dirs) and t.dir:
+      print t.emoji() + "  " + path
       prefix = '   '
 
     dirs = sorted(dirs, key=lambda s: str(s).lower())
