@@ -111,11 +111,12 @@ class File:
     """
     
     """
-    self.path = path
+    self.path = os.path.abspath(path)
     self.dir = os.path.isdir(path)
     self.contents = []
     self.size = ''
     self.unit = ''
+    self.modified = os.path.getmtime(path)
 
     if self.dir:
       self.contents = self.__filter(os.listdir(path))
@@ -247,6 +248,7 @@ if __name__ == '__main__':
       prefix = '   '
 
     dirs = sorted(dirs, key=lambda s: str(s).lower())
+    files = sorted(files, key=lambda s: str(s).lower())
 
     longest = 0
     biggestSize = 1
@@ -260,22 +262,13 @@ if __name__ == '__main__':
 
     i = 0 
 
-    for dir in dirs:
+    for file in dirs + files:
 
       contents = ''
-      if showSize and len(dir.contents):
-        contents = ((longest - len(os.path.basename(dir.path))) * ' ') + (int(dir.size) > 0 and (((len(biggestSize) - len(dir.size)) * ' ') + str(dir.size) + ' ' + dir.unit  or "") or "")
+      if file.dir and showSize and len(file.contents):
+        contents = ((longest - len(os.path.basename(file.path))) * ' ') + (int(file.size) > 0 and (((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit  or "") or "")
+      elif not file.dir and showSize:
+        contents = ((longest - len(os.path.basename(file.path))) * ' ') + ((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit
 
-      print prefix + dir.emoji() + "  " + os.path.basename(dir.path) + "  " + contents
-      i += 1
-
-    files = sorted(files, key=lambda s: str(s).lower())
-    last = None
-    i = 0
-
-    for file in files:
-
-      size = showSize and "  " + ((longest - len(os.path.basename(file.path))) * ' ') + ((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit  or ""
-
-      print prefix + file.emoji() + "  " + os.path.basename(file.path) + size
+      print prefix + file.emoji() + "  " + os.path.basename(file.path) + "  " + contents
       i += 1
