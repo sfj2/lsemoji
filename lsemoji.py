@@ -16,7 +16,8 @@ import sys
 import os
 import math
 import getopt
-from datetime import date
+import pwd
+from datetime import datetime
 
 IGNORED = ['.', '..', '.DS_Store']
 PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST', '.BBPROJECTD']
@@ -118,17 +119,25 @@ class File:
     
     """
     self.path = os.path.abspath(path)
-    self.dir = os.path.isdir(path)
+    self.exists = os.path.exists(self.path)
+
+    self.dir = self.exists and os.path.isdir(path) or False
     self.contents = []
     self.size = ''
     self.unit = ''
-    self.modified = os.path.getmtime(path)
+    self.owner = ''
 
-    if self.dir:
-      self.contents = self.__filter(os.listdir(path))
-      self.size, self.unit = str(len(self.contents)), 'item' + (len(self.contents) > 1 and 's' or '')
-    else:
-      self.size, self.unit = self.__size()
+    self.modified = self.exists and os.path.getmtime(self.path) or 0
+    
+    if self.exists:
+      
+      self.owner = pwd.getpwuid(os.stat(self.path).st_uid).pw_name
+      
+      if self.dir:
+        self.contents = self.__filter(os.listdir(path))
+        self.size, self.unit = str(len(self.contents)), 'item' + (len(self.contents) > 1 and 's' or '')
+      else:
+        self.size, self.unit = self.__size()
 
   def __str__(self):
     return self.path
@@ -252,7 +261,7 @@ if __name__ == '__main__':
 
     prefix = ''
     t = File(path)
-    if len(args) > 1  and (files or dirs) and t.dir:
+    if len(args) > 1  and (files or dirs) and t.exists and t.dir:
       print t.emoji() + "  " + path
       prefix = '   '
 
@@ -275,6 +284,7 @@ if __name__ == '__main__':
 
     i = 0 
 
+#    prevOwner = ''
     for file in dirs + files:
 
       contents = ''
@@ -288,8 +298,10 @@ if __name__ == '__main__':
         elif not file.dir:
           contents = ((longest - len(os.path.basename(file.path))) * ' ') + ((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit
 
-        when = date.fromtimestamp(file.modified)
-        contents = contents + ((longestUnit - len(file.unit)) * ' ') + ' ' + str(when.strftime('%b %d %Y')) #%I:%M%p
+        when = datetime.fromtimestamp(os.path.getmtime(file.path))
+        contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + str(when.strftime('%b %d %Y %H:%M')) + '  ' + file.owner # (file.owner != prevOwner and file.owner or '')
+        
 
       print prefix + file.emoji() + "  " + os.path.basename(file.path) + "  " + contents
       i += 1
+#      prevOwner = file.owner
