@@ -28,6 +28,7 @@ map = {
   'FOLDER' : "📂",
   'FOLDER_EMPTY' : "📁",
   'DEFAULT' : "📄",
+  'ROOT' : "💻",
 
   # audio
   '.AIFF' : "🎵",
@@ -174,6 +175,9 @@ class File:
     elif self.path.rstrip('/') == os.getenv('HOME'):
       return map['HOME']
 
+    elif self.path == '/':
+      return map['ROOT']
+
     elif os.path.ismount(self.path):
       return map['MOUNT']
 
@@ -251,7 +255,7 @@ if __name__ == '__main__':
     files = sorted(files, key=lambda s: str(s).lower())
 
     longest = 0
-    biggestSize = 1
+    biggestSize = '1'
     for i in dirs + files:
       l = len(os.path.basename(i.path))
       if l > longest:
@@ -265,10 +269,11 @@ if __name__ == '__main__':
     for file in dirs + files:
 
       contents = ''
-      if file.dir and showSize and len(file.contents):
-        contents = ((longest - len(os.path.basename(file.path))) * ' ') + (int(file.size) > 0 and (((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit  or "") or "")
-      elif not file.dir and showSize:
-        contents = ((longest - len(os.path.basename(file.path))) * ' ') + ((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit
+      if showSize:
+        if file.dir and len(file.contents):
+          contents = ((longest - len(os.path.basename(file.path))) * ' ') + (int(file.size) > 0 and (((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit  or "") or "")
+        elif not file.dir:
+          contents = ((longest - len(os.path.basename(file.path))) * ' ') + ((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit
 
       print prefix + file.emoji() + "  " + os.path.basename(file.path) + "  " + contents
       i += 1
