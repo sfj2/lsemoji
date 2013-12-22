@@ -19,7 +19,6 @@ import getopt
 import pwd
 from datetime import datetime
 
-IGNORED = ['.', '..', '.DS_Store']
 PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST', '.BBPROJECTD']
 
 #def find_owner(filename):
@@ -148,9 +147,7 @@ class File:
     """
     l = []
     for i in list:
-      if i in IGNORED:
-        pass
-      else:
+      if i != '.' and i != '..':
         l.append(i)
     return l
 
@@ -246,9 +243,7 @@ if __name__ == '__main__':
     else:
       for line in os.listdir(path):
         line = line.rstrip()
-        if line in IGNORED:
-          continue
-        elif line[0] == '.' and not showHidden:
+        if line[0] == '.' and not showHidden:
           continue
 
         name, extension = os.path.splitext(line)
