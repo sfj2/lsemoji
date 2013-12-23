@@ -34,6 +34,17 @@ Human-friendly directory listings in your terminal. Example usage:
     🎬  video.mpeg
     📝  word.doc
     📝  word.docx
+
+## Usage
+
+    > lsemoji [-adfl] [path ...]
+
+* -a : include hidden files ('.')
+* -d : only include directories
+* -f : only include files
+* -l : long output (includes file size, date modified, owner, etc.)
+* -r : reverse sort order
+* -s : sort by size
     
 ## Install
 

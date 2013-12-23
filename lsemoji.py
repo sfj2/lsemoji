@@ -21,9 +21,6 @@ from datetime import datetime
 
 PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST', '.BBPROJECTD']
 
-#def find_owner(filename):
-#    return getpwuid(stat(filename).st_uid).pw_name
-
 map = {
   
   # special
@@ -123,6 +120,7 @@ class File:
     self.dir = self.exists and os.path.isdir(path) or False
     self.contents = []
     self.size = ''
+    self.length = 0
     self.unit = ''
     self.owner = ''
 
@@ -133,29 +131,28 @@ class File:
       self.owner = pwd.getpwuid(os.stat(self.path).st_uid).pw_name
       
       if self.dir:
-        self.contents = self.__filter(os.listdir(path))
-        self.size, self.unit = str(len(self.contents)), 'item' + (len(self.contents) > 1 and 's' or '')
+        list = os.listdir(path)
+        for i in list:
+          if i != '.' and i != '..':
+            self.contents.append(i)
+
+        self.length = len(self.contents)
+        self.size, self.unit = str(self.length), 'item' + (len(self.contents) > 1 and 's' or '')
+
       else:
+        self.length = os.path.getsize(self.path)
         self.size, self.unit = self.__size()
+        if self.length == 0:
+          self.length = 0.00001
 
   def __str__(self):
     return self.path
-
-  def __filter(self, list):
-    """
-    
-    """
-    l = []
-    for i in list:
-      if i != '.' and i != '..':
-        l.append(i)
-    return l
 
   def __size(self):
     """
     Human friendly file size
     """
-    num = os.path.getsize(self.path)
+    num = self.length
     unit_list = zip(['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'], [0, 0, 1, 2, 2, 2])
 
     if num == 1:
@@ -181,7 +178,7 @@ class File:
     extension = extension.upper()
 
     if extension in PACKAGES:
-      return map.has_key(extension) and map[extension] or map['.PACKAGE']
+      return map['.PACKAGE']
 
     elif self.path.rstrip('/') == os.getenv('HOME'):
       return map['HOME']
@@ -201,7 +198,7 @@ class File:
 if __name__ == '__main__':
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], 'al')
+    opts, args = getopt.getopt(sys.argv[1:], 'dfalrs')
   except getopt.GetoptError:
     print 'incorrect usage'
     sys.exit(2)
@@ -209,14 +206,28 @@ if __name__ == '__main__':
   if not args:
     args = []
 
-  showHidden = False
-  showSize = False
+  OPTS = {
+    'hidden' : False,
+    'long' : False,
+    'dirs' : False,
+    'files' : False,
+    'reverse' : False,
+    'size' : False
+  }
 
   for opt, arg in opts:
     if opt == '-a':
-      showHidden = True
+      OPTS['hidden'] = True
     elif opt == '-l':
-      showSize = True
+      OPTS['long'] = True
+    elif opt == '-d':
+      OPTS['dirs'] = True
+    elif opt == '-f':
+      OPTS['files'] = True
+    elif opt == '-r':
+      OPTS['reverse'] = True
+    elif opt == '-s':
+      OPTS['size'] = True
 
   if len(args) == 0:
     args.append('')
@@ -243,13 +254,13 @@ if __name__ == '__main__':
     else:
       for line in os.listdir(path):
         line = line.rstrip()
-        if line[0] == '.' and not showHidden:
+        if line[0] == '.' and not OPTS['hidden']:
           continue
 
         name, extension = os.path.splitext(line)
         f = File(os.path.abspath(os.path.join(path, line)))
 
-        if f.dir and not extension.upper() in PACKAGES:
+        if f.dir: # and not extension.upper() in PACKAGES:
           dirs.append(f)
         elif os.path.exists(f.path):
           files.append(f)
@@ -260,12 +271,18 @@ if __name__ == '__main__':
       print t.emoji() + "  " + path
       prefix = '   '
 
-    dirs = sorted(dirs, key=lambda s: str(s).lower())
-    files = sorted(files, key=lambda s: str(s).lower())
+    dirs = sorted(dirs, key=lambda s: OPTS['size'] and s.length or str(s).lower(), reverse=OPTS['reverse'])
+    files = sorted(files, key=lambda s: OPTS['size'] and s.length or str(s).lower(), reverse=OPTS['reverse'])
 
     longest = 0
     biggestSize = '1'
     longestUnit = 0
+    
+    if OPTS['dirs']:
+      files = []
+    elif OPTS['files']:
+      dirs = []
+
     for i in dirs + files:
       l = len(os.path.basename(i.path))
       if l > longest:
@@ -279,11 +296,10 @@ if __name__ == '__main__':
 
     i = 0 
 
-#    prevOwner = ''
     for file in dirs + files:
 
       contents = ''
-      if showSize:
+      if OPTS['long']:
         if file.dir:
           contents = ((longest - len(os.path.basename(file.path))) * ' ') + (int(file.size) > 0 and (((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit  or "") or "")
 
