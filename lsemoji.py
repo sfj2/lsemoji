@@ -198,7 +198,7 @@ class File:
 if __name__ == '__main__':
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], 'dfalrs', ['help'])
+    opts, args = getopt.getopt(sys.argv[1:], 'dfalrst', ['help'])
   except getopt.GetoptError:
     print 'incorrect usage'
     sys.exit(2)
@@ -212,7 +212,8 @@ if __name__ == '__main__':
     'dirs' : False,
     'files' : False,
     'reverse' : False,
-    'size' : False
+    'size' : False,
+    'text' : False
   }
 
   for opt, arg in opts:
@@ -225,6 +226,7 @@ if __name__ == '__main__':
   -l : long output
   -r : reverse sort order
   -s : sort by size
+  -t : ASCII output
 
    https://github.com/davidfmiller/lsemoji"""
       sys.exit()
@@ -240,6 +242,9 @@ if __name__ == '__main__':
       OPTS['reverse'] = True
     elif opt == '-s':
       OPTS['size'] = True
+    elif opt == '-t':
+      OPTS['text'] = True
+
 
   if len(args) == 0:
     args.append('')
@@ -325,6 +330,6 @@ if __name__ == '__main__':
         contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + str(when.strftime('%b %d %Y %H:%M')) + '  ' + file.owner # (file.owner != prevOwner and file.owner or '')
         
 
-      print prefix + file.emoji() + "  " + os.path.basename(file.path) + "  " + contents
+      print (not OPTS['text'] and prefix + file.emoji() + "  " or '') + os.path.basename(file.path) + "  " + contents
       i += 1
 #      prevOwner = file.owner
