@@ -37,15 +37,11 @@ Human-friendly directory listings in your terminal. Example usage:
 
 ## Usage
 
-    > lsemoji [-adfl] [path ...]
+    > lsemoji [path ...]
 
-* -a : include hidden files ('.')
-* -d : only include directories
-* -f : only include files
-* -l : long output (includes file size, date modified, owner, etc.)
-* -r : reverse sort order
-* -s : sort by size
-    
+Type `lsemoji --help` for an explanation of all options/arguments.
+
+
 ## Install
 
 Clone the repo (or just save the .py file locally) and ensure the script is in your path:

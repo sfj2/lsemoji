@@ -198,7 +198,7 @@ class File:
 if __name__ == '__main__':
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], 'dfalrs')
+    opts, args = getopt.getopt(sys.argv[1:], 'dfalrs', ['help'])
   except getopt.GetoptError:
     print 'incorrect usage'
     sys.exit(2)
@@ -216,6 +216,18 @@ if __name__ == '__main__':
   }
 
   for opt, arg in opts:
+    if opt == '--help':
+      print """🏥  lsemoji [-adflrs] [path ...]      
+
+  -a : include hidden files
+  -d : only include directories
+  -f : only include files
+  -l : long output
+  -r : reverse sort order
+  -s : sort by size
+
+   https://github.com/davidfmiller/lsemoji"""
+      sys.exit()
     if opt == '-a':
       OPTS['hidden'] = True
     elif opt == '-l':
