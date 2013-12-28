@@ -204,15 +204,15 @@ if __name__ == '__main__':
     args = []
 
   OPTS = {
-    'hidden' : False,   # include hidden files
-    'long' : False,     # long output
-    'dirs' : False,     # only list directories
-    'files' : False,    # only list files
-    'reverse' : False,  # reverse sort order
-    'merge' : True,     # merge files and directories into one 
-    'size' : False,     # sort by size
+    'hidden' :   False, # include hidden files
+    'long' :     False, # long output
+    'dirs' :     False, # only list directories
+    'files' :    False, # only list files
+    'reverse' :  False, # reverse sort order
+    'merge' :    False, # merge files and directories into one 
+    'size' :     False, # sort by size
     'modified' : False, # sort by date modified
-    'text' : False      # text-only output
+    'text' :     False  # text-only output
   }
 
   for opt, arg in opts:
@@ -246,7 +246,7 @@ if __name__ == '__main__':
     elif opt == '-s':
       OPTS['size'] = True
     elif opt == '-k':
-      OPTS['merge'] = False
+      OPTS['merge'] = True
     elif opt == '-t':
       OPTS['text'] = True
 
