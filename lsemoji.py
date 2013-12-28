@@ -1,9 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# sort by folder on or off
-# case-insensitive sorting
-# emojis
 
 """
 Human friendly directory listings
@@ -125,7 +122,7 @@ class File:
     self.owner = ''
 
     self.modified = self.exists and os.path.getmtime(self.path) or 0
-    
+
     if self.exists:
       
       self.owner = pwd.getpwuid(os.stat(self.path).st_uid).pw_name
@@ -198,7 +195,7 @@ class File:
 if __name__ == '__main__':
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], 'dfalrst', ['help'])
+    opts, args = getopt.getopt(sys.argv[1:], 'adflmrst', ['help'])
   except getopt.GetoptError:
     print 'incorrect usage'
     sys.exit(2)
@@ -213,17 +210,19 @@ if __name__ == '__main__':
     'files' : False,
     'reverse' : False,
     'size' : False,
+    'modified' : False,
     'text' : False
   }
 
   for opt, arg in opts:
     if opt == '--help':
-      print """🏥  lsemoji [-adflrs] [path ...]      
+      print """🏥  lsemoji [-adflrst] [path ...]      
 
   -a : include hidden files
-  -d : only include directories
-  -f : only include files
+  -d : only list directories
+  -f : only list files
   -l : long output
+  -m : sort by date modified
   -r : reverse sort order
   -s : sort by size
   -t : ASCII output
@@ -238,6 +237,8 @@ if __name__ == '__main__':
       OPTS['dirs'] = True
     elif opt == '-f':
       OPTS['files'] = True
+    elif opt == '-m':
+      OPTS['modified'] = True
     elif opt == '-r':
       OPTS['reverse'] = True
     elif opt == '-s':
@@ -287,9 +288,16 @@ if __name__ == '__main__':
     if len(args) > 1  and (files or dirs) and t.exists and t.dir:
       print t.emoji() + "  " + path
       prefix = '   '
+      
+    if OPTS['size']:
+      sorter = lambda f: f.length
+    elif OPTS['modified']:
+      sorter = lambda f: f.modified
+    else:
+      sorter = lambda f: str(f).lower()
 
-    dirs = sorted(dirs, key=lambda s: OPTS['size'] and s.length or str(s).lower(), reverse=OPTS['reverse'])
-    files = sorted(files, key=lambda s: OPTS['size'] and s.length or str(s).lower(), reverse=OPTS['reverse'])
+    dirs = sorted(dirs, key=sorter, reverse=OPTS['reverse'])
+    files = sorted(files, key=sorter, reverse=OPTS['reverse'])
 
     longest = 0
     biggestSize = '1'
@@ -326,10 +334,9 @@ if __name__ == '__main__':
         elif not file.dir:
           contents = ((longest - len(os.path.basename(file.path))) * ' ') + ((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit
 
-        when = datetime.fromtimestamp(os.path.getmtime(file.path))
-        contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + str(when.strftime('%b %d %Y %H:%M')) + '  ' + file.owner # (file.owner != prevOwner and file.owner or '')
+        modified = datetime.fromtimestamp(file.modified)
+        contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + str(modified.strftime('%b %d %Y %H:%M')) + '  ' + file.owner
         
 
       print (not OPTS['text'] and prefix + file.emoji() + "  " or '') + os.path.basename(file.path) + "  " + contents
       i += 1
-#      prevOwner = file.owner

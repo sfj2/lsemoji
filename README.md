@@ -39,8 +39,7 @@ Human-friendly directory listings in your terminal. Example usage:
 
     > lsemoji [path ...]
 
-Type `lsemoji --help` for an explanation of all options/arguments.
-
+Use the `--help` option for an explanation of all options/arguments.
 
 ## Install
 
