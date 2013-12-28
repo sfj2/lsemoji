@@ -191,6 +191,8 @@ class File:
 
     return map.has_key(extension) and map[extension] or map['DEFAULT']
 
+def emoji(path):
+  return File(path).emoji()
 
 if __name__ == '__main__':
 

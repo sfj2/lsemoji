@@ -59,4 +59,5 @@ You might want to create an alias for it, too. For bash do the following in your
     > python 
     ...
     >>> import lsemoji as ls
-    >>> print ls.File('/').emoji()
+    >>> print ls.emoji('/')
+    💻 
