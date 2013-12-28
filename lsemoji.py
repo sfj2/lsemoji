@@ -195,7 +195,7 @@ class File:
 if __name__ == '__main__':
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], 'adflmrst', ['help'])
+    opts, args = getopt.getopt(sys.argv[1:], 'adfklmrst', ['help'])
   except getopt.GetoptError:
     print 'incorrect usage'
     sys.exit(2)
@@ -204,23 +204,25 @@ if __name__ == '__main__':
     args = []
 
   OPTS = {
-    'hidden' : False,
-    'long' : False,
-    'dirs' : False,
-    'files' : False,
-    'reverse' : False,
-    'size' : False,
-    'modified' : False,
-    'text' : False
+    'hidden' : False,   # include hidden files
+    'long' : False,     # long output
+    'dirs' : False,     # only list directories
+    'files' : False,    # only list files
+    'reverse' : False,  # reverse sort order
+    'merge' : True,     # merge files and directories into one 
+    'size' : False,     # sort by size
+    'modified' : False, # sort by date modified
+    'text' : False      # text-only output
   }
 
   for opt, arg in opts:
     if opt == '--help':
-      print """🏥  lsemoji [-adflrst] [path ...]      
+      print """🏥  lsemoji [-adfklmrst] [path ...]      
 
   -a : include hidden files
   -d : only list directories
   -f : only list files
+  -k : separate files and directories
   -l : long output
   -m : sort by date modified
   -r : reverse sort order
@@ -243,6 +245,8 @@ if __name__ == '__main__':
       OPTS['reverse'] = True
     elif opt == '-s':
       OPTS['size'] = True
+    elif opt == '-k':
+      OPTS['merge'] = False
     elif opt == '-t':
       OPTS['text'] = True
 
@@ -278,9 +282,9 @@ if __name__ == '__main__':
         name, extension = os.path.splitext(line)
         f = File(os.path.abspath(os.path.join(path, line)))
 
-        if f.dir: # and not extension.upper() in PACKAGES:
+        if f.dir and not OPTS['merge']: # and not extension.upper() in PACKAGES:
           dirs.append(f)
-        elif os.path.exists(f.path):
+        else:
           files.append(f)
 
     prefix = ''
