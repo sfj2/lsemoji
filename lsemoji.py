@@ -325,6 +325,7 @@ if __name__ == '__main__':
 
     i = 0 
 
+    prevOwner = ''
     for file in dirs + files:
 
       contents = ''
@@ -339,8 +340,9 @@ if __name__ == '__main__':
           contents = ((longest - len(os.path.basename(file.path))) * ' ') + ((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit
 
         modified = datetime.fromtimestamp(file.modified)
-        contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + str(modified.strftime('%b %d %Y %H:%M')) + '  ' + file.owner
-        
+        contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + str(modified.strftime('%b %d %Y %H:%M')) + '  ' + (file.owner != prevOwner and file.owner or '')
+
+      prevOwner = file.owner
 
       print (not OPTS['text'] and prefix + file.emoji() + "  " or '') + os.path.basename(file.path) + "  " + contents
       i += 1
