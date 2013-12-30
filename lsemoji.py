@@ -132,7 +132,11 @@ class File:
 
       stat = os.stat(self.path)
       self.owner = pwd.getpwuid(stat.st_uid).pw_name
-      self.group = grp.getgrgid(stat.st_gid)[0]
+      try:
+        self.group = grp.getgrgid(stat.st_gid)[0]
+      except KeyError:
+        self.group = stat.st_gid
+
       self.perms = oct(stat[0])[-3:]
 
       if self.dir:
