@@ -13,7 +13,10 @@ import sys
 import os
 import math
 import getopt
+
 import pwd
+import grp
+
 from datetime import datetime
 
 PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST', '.BBPROJECTD']
@@ -120,13 +123,18 @@ class File:
     self.length = 0
     self.unit = ''
     self.owner = ''
+    self.group = ''
+    self.perms = ''
 
     self.modified = self.exists and os.path.getmtime(self.path) or 0
 
     if self.exists:
-      
-      self.owner = pwd.getpwuid(os.stat(self.path).st_uid).pw_name
-      
+
+      stat = os.stat(self.path)
+      self.owner = pwd.getpwuid(stat.st_uid).pw_name
+      self.group = grp.getgrgid(stat.st_gid)[0]
+      self.perms = oct(stat[0])[-3:]
+
       if self.dir:
         list = os.listdir(path)
         for i in list:
@@ -308,7 +316,8 @@ if __name__ == '__main__':
     longest = 0
     biggestSize = '1'
     longestUnit = 0
-    
+    longestOwner = ''
+
     if OPTS['dirs']:
       files = []
     elif OPTS['files']:
@@ -324,6 +333,10 @@ if __name__ == '__main__':
 
       if len(i.unit) > longestUnit:
         longestUnit = len(i.unit)
+
+      if len(i.owner) > longestOwner:
+        longestOwner = i.owner
+
 
     i = 0 
 
@@ -342,9 +355,9 @@ if __name__ == '__main__':
           contents = ((longest - len(os.path.basename(file.path))) * ' ') + ((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit
 
         modified = datetime.fromtimestamp(file.modified)
-        contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + str(modified.strftime('%b %d %Y %H:%M')) + '  ' + (file.owner != prevOwner and file.owner or '')
+        contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + file.perms + '  ' + str(modified.strftime('%b %d %Y %H:%M')) + '  ' + (file.owner != prevOwner and file.owner or '') # + '  ' + file.group
 
       prevOwner = file.owner
 
-      print (not OPTS['text'] and prefix + file.emoji() + "  " or '') + os.path.basename(file.path) + "  " + contents
+      print (not OPTS['text'] and prefix + file.emoji() + '  ' or '') + os.path.basename(file.path) + '  ' + contents
       i += 1
