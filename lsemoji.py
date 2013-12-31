@@ -140,10 +140,13 @@ class File:
       self.perms = oct(stat[0])[-3:]
 
       if self.dir:
-        list = os.listdir(path)
-        for i in list:
-          if i != '.' and i != '..':
-            self.contents.append(i)
+        try:
+          list = os.listdir(path)
+          for i in list:
+            if i != '.' and i != '..':
+              self.contents.append(i)
+        except OSError:
+          pass
 
         self.length = len(self.contents)
         self.size, self.unit = str(self.length), 'item' + (len(self.contents) > 1 and 's' or '')
