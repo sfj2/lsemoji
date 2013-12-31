@@ -131,7 +131,10 @@ class File:
     if self.exists:
 
       stat = os.stat(self.path)
-      self.owner = pwd.getpwuid(stat.st_uid).pw_name
+      try:
+        self.owner = pwd.getpwuid(stat.st_uid).pw_name
+      except KeyError:
+        self.owner = str(stat.st_uid)
       try:
         self.group = grp.getgrgid(stat.st_gid)[0]
       except KeyError:
@@ -364,8 +367,6 @@ if __name__ == '__main__':
         modified = datetime.fromtimestamp(file.modified)
         contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + file.perms + '  ' + str(modified.strftime('%b %d %Y %H:%M')) + '  '
         contents += (file.owner != prevOwner and (file.owner + ((len(longestOwner) - len(file.owner)) * ' ')) or (len(longestOwner) * ' '))  + '  ' + (file.group != prevGroup and file.group or '')
-#        contents += len(longestOwner) * ' '
-#        contents += file.group
 
       prevOwner = file.owner
       prevGroup = file.group
