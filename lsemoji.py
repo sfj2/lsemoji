@@ -135,7 +135,7 @@ class File:
       try:
         self.group = grp.getgrgid(stat.st_gid)[0]
       except KeyError:
-        self.group = stat.st_gid
+        self.group = str(stat.st_gid)
 
       self.perms = oct(stat[0])[-3:]
 
@@ -341,13 +341,13 @@ if __name__ == '__main__':
       if len(i.unit) > longestUnit:
         longestUnit = len(i.unit)
 
-      if len(i.owner) > longestOwner:
+      if len(i.owner) > len(longestOwner):
         longestOwner = i.owner
 
 
     i = 0 
 
-    prevOwner = ''
+    prevOwner = prevGroup = ''
     for file in dirs + files:
 
       contents = ''
@@ -362,9 +362,13 @@ if __name__ == '__main__':
           contents = ((longest - len(os.path.basename(file.path))) * ' ') + ((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit
 
         modified = datetime.fromtimestamp(file.modified)
-        contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + file.perms + '  ' + str(modified.strftime('%b %d %Y %H:%M')) + '  ' + (file.owner != prevOwner and file.owner or '') # + '  ' + file.group
+        contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + file.perms + '  ' + str(modified.strftime('%b %d %Y %H:%M')) + '  '
+        contents += (file.owner != prevOwner and (file.owner + ((len(longestOwner) - len(file.owner)) * ' ')) or (len(longestOwner) * ' '))  + '  ' + (file.group != prevGroup and file.group or '')
+#        contents += len(longestOwner) * ' '
+#        contents += file.group
 
       prevOwner = file.owner
+      prevGroup = file.group
 
       print (not OPTS['text'] and prefix + file.emoji() + '  ' or '') + os.path.basename(file.path) + '  ' + contents
       i += 1
