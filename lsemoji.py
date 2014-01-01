@@ -100,8 +100,7 @@ map = {
   '.PKG' : "📦",
   '.ZIP' : "📦",
   '.GZ' : "📦",
-  
-  
+
    # defaults
   '.PACKAGE' : "📦",
 }
@@ -215,7 +214,7 @@ def emoji(path):
 if __name__ == '__main__':
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], 'adfklmrst', ['help'])
+    opts, args = getopt.getopt(sys.argv[1:], 'acdfklmrst', ['help'])
   except getopt.GetoptError:
     print 'incorrect usage'
     sys.exit(2)
@@ -224,6 +223,7 @@ if __name__ == '__main__':
     args = []
 
   OPTS = {
+    'case' :     False, # case-sensitive sorting
     'hidden' :   False, # include hidden files
     'long' :     False, # long output
     'dirs' :     False, # only list directories
@@ -237,9 +237,10 @@ if __name__ == '__main__':
 
   for opt, arg in opts:
     if opt == '--help':
-      print """🏥  lsemoji [-adfklmrst] [path ...]      
+      print """🏥  lsemoji [-acdfklmrst] [path ...]      
 
   -a : include hidden files
+  -c : case-sensitive sorting
   -d : only list directories
   -f : only list files
   -k : separate files and directories
@@ -253,20 +254,22 @@ if __name__ == '__main__':
       sys.exit()
     if opt == '-a':
       OPTS['hidden'] = True
-    elif opt == '-l':
-      OPTS['long'] = True
+    if opt == '-c':
+      OPTS['case'] = True
     elif opt == '-d':
       OPTS['dirs'] = True
     elif opt == '-f':
       OPTS['files'] = True
+    elif opt == '-k':
+      OPTS['merge'] = True
+    elif opt == '-l':
+      OPTS['long'] = True
     elif opt == '-m':
       OPTS['modified'] = True
     elif opt == '-r':
       OPTS['reverse'] = True
     elif opt == '-s':
       OPTS['size'] = True
-    elif opt == '-k':
-      OPTS['merge'] = True
     elif opt == '-t':
       OPTS['text'] = True
 
@@ -302,7 +305,7 @@ if __name__ == '__main__':
         name, extension = os.path.splitext(line)
         f = File(os.path.abspath(os.path.join(path, line)))
 
-        if f.dir and not OPTS['merge']: # and not extension.upper() in PACKAGES:
+        if f.dir and not OPTS['merge'] and not extension.upper() in PACKAGES:
           dirs.append(f)
         else:
           files.append(f)
@@ -318,7 +321,10 @@ if __name__ == '__main__':
     elif OPTS['modified']:
       sorter = lambda f: f.modified
     else:
-      sorter = lambda f: str(f).lower()
+      if not OPTS['case']:
+        sorter = lambda f: str(f).lower()
+      else:
+        sorter = lambda f: str(f)
 
     dirs = sorted(dirs, key=sorter, reverse=OPTS['reverse'])
     files = sorted(files, key=sorter, reverse=OPTS['reverse'])
