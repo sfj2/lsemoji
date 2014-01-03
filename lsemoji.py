@@ -356,10 +356,17 @@ if __name__ == '__main__':
 
     i = 0 
 
-    prevOwner = prevGroup = ''
+    prevOwner = prevGroup = prevMonth = prevYear = prevDay = ''
     for file in dirs + files:
 
       contents = ''
+
+      modified = datetime.fromtimestamp(file.modified)
+
+      year = modified.strftime('%Y')
+      month = modified.strftime('%b')
+      day = modified.strftime('%d')
+
       if OPTS['long']:
         if file.dir:
           contents = ((longest - len(os.path.basename(file.path))) * ' ') + (int(file.size) > 0 and (((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit  or "") or "")
@@ -370,12 +377,15 @@ if __name__ == '__main__':
         elif not file.dir:
           contents = ((longest - len(os.path.basename(file.path))) * ' ') + ((len(biggestSize) - len(file.size)) * ' ') + str(file.size) + ' ' + file.unit
 
-        modified = datetime.fromtimestamp(file.modified)
-        contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + file.perms + '  ' + str(modified.strftime('%b %d %Y %H:%M')) + '  '
+
+        contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + file.perms + '  ' + ((month != prevMonth or day != prevDay)and month or '   ') + ' ' + ((day != prevDay or month != prevMonth or year != prevYear) and day or '  ')  + ' ' + ((year != prevYear or month != prevMonth or day != prevDay) and year or '    ') + ' ' + str(modified.strftime('%H:%M')) + '  '
         contents += (file.owner != prevOwner and (file.owner + ((len(longestOwner) - len(file.owner)) * ' ')) or (len(longestOwner) * ' '))  + '  ' + (file.group != prevGroup and file.group or '')
 
       prevOwner = file.owner
       prevGroup = file.group
+      prevYear = year
+      prevMonth = month
+      prevDay = day
 
       print (not OPTS['text'] and prefix + file.emoji() + '  ' or '') + os.path.basename(file.path) + '  ' + contents
       i += 1
