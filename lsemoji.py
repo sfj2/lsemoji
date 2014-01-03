@@ -86,6 +86,7 @@ map = {
   '.DMG' : "💿",
   '.DOC' : "📝",
   '.DOCX' : "📝",
+  '.FIT' : "🏃",
   '.GPX' : "📍",
   '.ICHAT' : "💬",
   '.KML' : "📍",
@@ -214,7 +215,7 @@ def emoji(path):
 if __name__ == '__main__':
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], 'acdfklmrst', ['help'])
+    opts, args = getopt.getopt(sys.argv[1:], 'acdefklmrst', ['help'])
   except getopt.GetoptError:
     print 'incorrect usage'
     sys.exit(2)
@@ -231,17 +232,19 @@ if __name__ == '__main__':
     'reverse' :  False, # reverse sort order
     'merge' :    False, # merge files and directories into one 
     'size' :     False, # sort by size
+    'sparse' :   True,  # sparse output (prevent dupes)
     'modified' : False, # sort by date modified
     'text' :     False  # text-only output
   }
 
   for opt, arg in opts:
     if opt == '--help':
-      print """🏥  lsemoji [-acdfklmrst] [path ...]      
+      print """🏥  lsemoji [-acdefklmrst] [path ...]      
 
   -a : include hidden files
   -c : case-sensitive sorting
   -d : only list directories
+  -e : exhaustive output
   -f : only list files
   -k : separate files and directories
   -l : long output
@@ -252,12 +255,15 @@ if __name__ == '__main__':
 
    https://github.com/davidfmiller/lsemoji"""
       sys.exit()
+
     if opt == '-a':
       OPTS['hidden'] = True
     if opt == '-c':
       OPTS['case'] = True
     elif opt == '-d':
       OPTS['dirs'] = True
+    elif opt == '-e':
+      OPTS['sparse'] = False
     elif opt == '-f':
       OPTS['files'] = True
     elif opt == '-k':
@@ -277,14 +283,11 @@ if __name__ == '__main__':
   if len(args) == 0:
     args.append('')
 
-  dirIndex = -1
-
   for arg in args:
 
     dirs = []
     files = []
 
-    dirIndex += 1
     try:
       path = os.path.abspath(os.path.join(os.getcwd(), arg))
     except OSError:
@@ -381,11 +384,12 @@ if __name__ == '__main__':
         contents = contents + ((longestUnit - len(file.unit)) * ' ') + '  ' + file.perms + '  ' + ((month != prevMonth or day != prevDay)and month or '   ') + ' ' + ((day != prevDay or month != prevMonth or year != prevYear) and day or '  ')  + ' ' + ((year != prevYear or month != prevMonth or day != prevDay) and year or '    ') + ' ' + str(modified.strftime('%H:%M')) + '  '
         contents += (file.owner != prevOwner and (file.owner + ((len(longestOwner) - len(file.owner)) * ' ')) or (len(longestOwner) * ' '))  + '  ' + (file.group != prevGroup and file.group or '')
 
-      prevOwner = file.owner
-      prevGroup = file.group
-      prevYear = year
-      prevMonth = month
-      prevDay = day
+      if OPTS['sparse']:
+        prevOwner = file.owner
+        prevGroup = file.group
+        prevYear = year
+        prevMonth = month
+        prevDay = day
 
       print (not OPTS['text'] and prefix + file.emoji() + '  ' or '') + os.path.basename(file.path) + '  ' + contents
       i += 1
