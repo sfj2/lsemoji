@@ -19,7 +19,7 @@ import grp
 
 from datetime import datetime
 
-PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST', '.BBPROJECTD']
+PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST', '.XCODEPROJ', '.BBPROJECTD']
 
 map = {
   
