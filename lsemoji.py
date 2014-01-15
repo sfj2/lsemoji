@@ -316,7 +316,7 @@ if __name__ == '__main__':
     prefix = ''
     t = File(path)
     if len(args) > 1  and (files or dirs) and t.exists and t.dir:
-      print t.emoji() + "  " + path
+      print (not OPTS['text'] and t.emoji() + "  " or '') + path
       prefix = '   '
       
     if OPTS['size']:
@@ -391,5 +391,5 @@ if __name__ == '__main__':
         prevMonth = month
         prevDay = day
 
-      print (not OPTS['text'] and prefix + file.emoji() + '  ' or '') + os.path.basename(file.path) + '  ' + contents
+      print (not OPTS['text'] and prefix + file.emoji() or '') + '  ' + os.path.basename(file.path) + '  ' + contents
       i += 1
