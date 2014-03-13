@@ -42,9 +42,7 @@ Human-friendly directory listings in your terminal. Example usage:
 Use the `--help` option for an explanation of all options/arguments.
 
 ## Install
-
-Clone the repo (or just save the .py file locally) and ensure the script is in your path:
-
+    curl -fsSl https://raw.github.com/davidfmiller/lsemoji/master/install.sh | sh
     export PATH="$PATH:~/bin"
 
 You might want to create an alias for it, too. For bash do the following in your .profile:
