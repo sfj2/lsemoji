@@ -59,3 +59,15 @@ You might want to create an alias for it, too. For bash do the following in your
     >>> import lsemoji as ls
     >>> print ls.emoji('/')
     💻 
+
+## TODO
+
+### xattr
+
+    https://github.com/xattr/xattr
+
+### Unicode funk
+
+    📂  Roy Orbison                                       1 item   777  Mar 08 2012 10:49            
+    📂  Röyksopp                                        1 item   777              11:38            
+    📂  Rufus Wainwright                                  7 items  777  May 31 2012 10:30   

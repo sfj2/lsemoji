@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
 """
 Human friendly directory listings
 """
@@ -13,13 +12,16 @@ import sys
 import os
 import math
 import getopt
+import xattr
 
 import pwd
 import grp
+import subprocess
 
 from datetime import datetime
 
 PACKAGES = ['.APP', '.FRAMEWORK', '.PREFPANE', '.SCPTD', '.XCTEST', '.XCODEPROJ', '.BBPROJECTD']
+XATTR_KEY = 'com.readmeansrun.lsemoji'
 
 map = {
   
@@ -195,6 +197,10 @@ class File:
     name, extension = os.path.splitext(self.path)
     extension = extension.upper()
 
+    xattrs = xattr.xattr(self.path)
+    if (XATTR_KEY in xattrs.keys()):
+      return xattrs[XATTR_KEY]
+
     if extension in PACKAGES:
       return map['.PACKAGE']
 
@@ -213,12 +219,42 @@ class File:
     return map.has_key(extension) and map[extension] or map['DEFAULT']
 
 def emoji(path):
+  """
+  
+  """
   return File(path).emoji()
+
+def set(path, emoji):
+  """
+  
+  """
+  try:
+    out,err = subprocess.Popen(['xattr', '-w', XATTR_KEY, emoji, File(path).path], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    if err.strip():
+      return False
+
+    return emoji
+  except OSError:
+    return False
+
+def unset(path):
+  """
+  
+  """
+  try:
+    out,err = subprocess.Popen(['xattr', '-d', XATTR_KEY, File(path).path], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    if err.strip():
+      return False
+
+    return True
+  except OSError:
+    return False
+
 
 if __name__ == '__main__':
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], 'acdefklmrst', ['help'])
+    opts, args = getopt.getopt(sys.argv[1:], 'acdefklmrst', ['set', 'unset', 'help'])
   except getopt.GetoptError:
     print 'incorrect usage'
     sys.exit(2)
@@ -259,8 +295,31 @@ if __name__ == '__main__':
    https://github.com/davidfmiller/lsemoji"""
       sys.exit()
 
+    elif opt == '--set':
+      if len(args) < 2:
+        print 'incorrect usage'
+        sys.exit()
+      emoji = args[0]
+      args = args[1:]
+      for i in args:
+        if set(File(i).path, emoji):
+          print emoji + '  ' + i
+      sys.exit()
+
+    elif opt == '--unset':
+      if len(args) < 1:
+        print 'incorrect usage'
+        sys.exit()
+
+      for i in args:
+        if unset(File(i).path):
+          print emoji(i) + '  ' + i
+
+      sys.exit()
+
     if opt == '-a':
       OPTS['hidden'] = True
+
     if opt == '-c':
       OPTS['case'] = True
     elif opt == '-d':
