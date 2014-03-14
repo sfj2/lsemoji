@@ -62,11 +62,8 @@ You might want to create an alias for it, too. For bash do the following in your
 
 ## TODO
 
-### xattr
-
-    https://github.com/xattr/xattr
-
-### Unicode funk
+- [https://github.com/xattr/xattr](https://github.com/xattr/xattr)
+-  Unicode funk
 
     📂  Roy Orbison                                       1 item   777  Mar 08 2012 10:49            
     📂  Röyksopp                                        1 item   777              11:38            
