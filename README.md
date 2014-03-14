@@ -37,7 +37,9 @@ Human-friendly directory listings in your terminal. Example usage:
 
 ## Usage
 
-    > lsemoji [path ...]
+    > lsemoji.py [path ...]
+    > lsemoji.py --set 📃  file.txt [files...]
+    > lsemoji.py --unset file.txt [files...]
 
 Use the `--help` option for an explanation of all options/arguments.
 
@@ -62,8 +64,9 @@ You might want to create an alias for it, too. For bash do the following in your
 
 ## TODO
 
-- [https://github.com/xattr/xattr](https://github.com/xattr/xattr)
--  Unicode funk
+* [https://github.com/xattr/xattr](https://github.com/xattr/xattr)
+*  Unicode funk
+
 
     📂  Roy Orbison                                       1 item   777  Mar 08 2012 10:49            
     📂  Röyksopp                                        1 item   777              11:38            
