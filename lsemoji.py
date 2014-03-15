@@ -196,10 +196,13 @@ class File:
     """
     name, extension = os.path.splitext(self.path)
     extension = extension.upper()
-
-    xattrs = xattr.xattr(self.path)
-    if (XATTR_KEY in xattrs.keys()):
-      return xattrs[XATTR_KEY]
+    
+    try:
+      xattrs = xattr.xattr(self.path)
+      if (XATTR_KEY in xattrs.keys()):
+        return xattrs[XATTR_KEY]
+    except IOError:
+      pass
 
     if extension in PACKAGES:
       return map['.PACKAGE']
