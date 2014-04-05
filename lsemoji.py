@@ -69,7 +69,7 @@ map = {
   '.PY'     : "📃",
   '.RB'     : "📃",
   '.SCPT'   : "🍎",
-#  '.SCPTD'      : "🍎",
+  '.SCPTD'      : "🍎",
   '.APPLESCRIPT' : "🍎",
   '.SH'          : "📃",
 
@@ -84,6 +84,7 @@ map = {
   '.VCF'  : "👤",
   '.CSS'  : "🎨",
   '.SCSS'  : "🎨",
+  '.LESS'  : "🎨",
 
   # misc
   '.APP' : "🔧",
