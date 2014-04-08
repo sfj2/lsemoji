@@ -182,7 +182,7 @@ class File:
       quotient = float(num) / 1024**exponent
       unit, num_decimals = unit_list[exponent]
       format_string = '{:.%sf}' % (num_decimals)
-      return format_string.format(quotient), unit
+      return quotient and (format_string.format(quotient), unit) or ''
 
 
   def __len__(self):
