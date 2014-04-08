@@ -42,7 +42,6 @@ map = {
   # video
   '.MPEG' : "🎬",
   '.M4V' : "🎬",
-  '.MP4' : "🎬",
   '.MOV' : "🎬",
 
   # books
@@ -69,23 +68,21 @@ map = {
   '.PY'     : "📃",
   '.RB'     : "📃",
   '.SCPT'   : "🍎",
-  '.SCPTD'      : "🍎",
+#  '.SCPTD'      : "🍎",
   '.APPLESCRIPT' : "🍎",
   '.SH'          : "📃",
 
   # text 
-  '.TXT'      : "📄",
-  '.EML'      : "📫",
-  '.ICS'      : "📅",
-  '.HTML'     : "🌏",
-  '.HTM'      : "🌏",
-  '.MD'       : "📝",
-  '.MARKDOWN' : "📝",
-  '.RSS'      : "📰",
-  '.VCF'      : "👤",
-  '.CSS'      : "🎨",
-  '.SCSS'     : "🎨",
-  '.LESS'     : "🎨",
+  '.TXT'  : "📄",
+  '.EML'  : "📫",
+  '.ICS'  : "📅",
+  '.HTML' : "🌏",
+  '.HTM'  : "🌏",
+  '.MD'   : "📝",
+  '.RSS'  : "📰",
+  '.VCF'  : "👤",
+  '.CSS'  : "🎨",
+  '.SCSS'  : "🎨",
 
   # misc
   '.APP' : "🔧",
@@ -184,8 +181,8 @@ class File:
       exponent = min(int(math.log(num, 1024)), len(unit_list) - 1)
       quotient = float(num) / 1024**exponent
       unit, num_decimals = unit_list[exponent]
-      format_string = '{:.%sf}' % (num_decimals)
-      return quotient and (format_string.format(quotient), unit) or ''
+      format_string = '{0:.%sf}' % (num_decimals)
+      return format_string.format(quotient), unit
 
 
   def __len__(self):
