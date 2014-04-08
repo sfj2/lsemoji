@@ -47,7 +47,7 @@ Use the `--help` option for an explanation of all options/arguments.
 
 You might want to create an alias for it, too. For bash do the following in your .profile:
 
-    function __emoji () { python ~/Documents/git/lsemoji/lsemoji.py "$@"; } 
+    function __emoji () { python ~/bin/lsemoji "$@"; } 
     alias l="__emoji"
 
 ## Python module
